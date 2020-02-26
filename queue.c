@@ -108,6 +108,7 @@ bool q_insert_tail(queue_t *q, char *s)
         q->tail->next = newh;
     }
     q->tail = newh;
+    newh->next = NULL;
     q->size += 1;
     return true;
 }
@@ -179,7 +180,7 @@ void q_reverse(queue_t *q)
         tmp_now = tmp_next;
         tmp_next = tmp_now->next;
     }
-
+    tmp_now->next = tmp_prev;
     tmp = q->tail;
     q->tail = q->head;
     q->head = tmp;
@@ -192,6 +193,67 @@ void q_reverse(queue_t *q)
  */
 void q_sort(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
+    if (q->size == 1) {
+        return;
+    }
+    queue_t left_queue, right_queue;
+    int i;
+    list_ele_t *tmp;
+
+    left_queue.size = q->size >> 1;
+    right_queue.size = (q->size >> 1) + (q->size & 1);
+    left_queue.head = q->head;
+    right_queue.tail = q->tail;
+
+    tmp = q->head;
+
+    for (i = 1; i < left_queue.size; i++) {
+        tmp = tmp->next;
+    }
+    left_queue.tail = tmp;
+    right_queue.head = tmp->next;
+    left_queue.tail->next = NULL;
+    right_queue.tail->next = NULL;
+    q_sort(&left_queue);
+    q_sort(&right_queue);
+    q_merge(&left_queue, &right_queue, q);
+}
+
+void q_merge(queue_t *left_queue, queue_t *right_queue, queue_t *q)
+{
+    list_ele_t *left_tmp, *right_tmp, *left_next, *right_next, *current;
+    list_ele_t dummy_node;
+    left_tmp = left_queue->head;
+    right_tmp = right_queue->head;
+    q->head = e_compare(left_tmp, right_tmp) ? left_tmp : right_tmp;
+    current = &dummy_node;
+    while (left_tmp != NULL && right_tmp != NULL) {
+        left_next = left_tmp->next;
+        right_next = right_tmp->next;
+        if (e_compare(left_tmp, right_tmp)) {
+            current->next = left_tmp;
+            current = left_tmp;
+            left_tmp = left_next;
+        } else {
+            current->next = right_tmp;
+            current = right_tmp;
+            right_tmp = right_next;
+        }
+    }
+    if (left_tmp == NULL) {
+        current->next = right_tmp;
+        q->tail = right_queue->tail;
+    } else {
+        current->next = left_tmp;
+        q->tail = left_queue->tail;
+    }
+}
+
+bool e_compare(list_ele_t *element_a, list_ele_t *element_b)
+{
+    if (strcmp(element_a->value, element_b->value) > 0) {
+        return false;
+    } else {
+        return true;
+    }
 }
