@@ -80,9 +80,6 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
-    /* TODO: You need to write the complete code for this function */
-    /* Remember: It should operate in O(1) time */
-    /* TODO: Remove the above comment when you are about to implement. */
     list_ele_t *newh;
     size_t length;
 
@@ -136,7 +133,7 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 
     if (sp != NULL) {
         memcpy(sp, tmp->value, bufsize - 1);
-        sp[bufsize] = '\0';
+        sp[bufsize - 1] = '\0';
     }
     free(tmp->value);
     free(tmp);
@@ -163,8 +160,6 @@ int q_size(queue_t *q)
  */
 void q_reverse(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
     if (!q)
         return;
     if (q->size == 0)
@@ -193,7 +188,9 @@ void q_reverse(queue_t *q)
  */
 void q_sort(queue_t *q)
 {
-    if (q->size == 1) {
+    if (!q)
+        return;
+    if (q->size == 1 || q->size == 0) {
         return;
     }
     queue_t left_queue, right_queue;
